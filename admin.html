@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+   <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto py-8">
+        <h1 class="text-3xl font-bold mb-6">Painel Administrativo</h1>
+
+        <!-- Gerenciamento de Leads -->
+        <section id="gerenciarLeads" class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">Gerenciamento de Leads</h2>
+            <div id="leadsContainer">
+                <!-- Leads serão exibidos aqui -->
+                <p>Carregando leads...</p>
+            </div>
+        </section>
+
+        <!-- Gerenciamento de Planos e Preços (Exemplo) -->
+        <section id="gerenciarPlanos" class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">Gerenciamento de Planos</h2>
+             <div id="planosContainer">
+                <p>Carregando planos...</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    async function carregarLeads() {
+        try {
+            const response = await fetch('https://api.greb.com.br/functions/code_65c769/listar_leads');
+            const leads = await response.json();
+
+            const leadsContainer = document.getElementById('leadsContainer');
+            leadsContainer.innerHTML = ''; // Limpa o container
+
+            if (leads.length === 0) {
+                leadsContainer.innerHTML = '<p>Nenhum lead encontrado.</p>';
+                return;
+            }
+
+            leads.forEach(lead => {
+                const leadElement = document.createElement('div');
+                leadElement.classList.add('mb-2', 'p-3', 'border', 'rounded', 'bg-gray-100');
+                leadElement.innerHTML = `
+                    <p><strong>Nome:</strong> ${lead.nome}</p>
+                    <p><strong>Email:</strong> ${lead.email}</p>
+                    <p><strong>Telefone:</strong> ${lead.telefone}</p>
+                    <hr class="my-2">
+                `;
+                leadsContainer.appendChild(leadElement);
+            });
+
+        } catch (error) {
+            console.error('Erro ao carregar leads:', error);
+           const leadsContainer = document.getElementById('leadsContainer');
+            leadsContainer.innerHTML = '<p>Erro ao carregar leads.</p>';
+        }
+    }
+
+
+      async function carregarPlanos() {
+
+        try {
+            const response = await fetch('https://api.greb.com.br/functions/code_65c769/listar_planos');
+            const planos = await response.json();
+
+            const planosContainer = document.getElementById('planosContainer');
+            planosContainer.innerHTML = '';
+
+             if (planos.length === 0) {
+                planosContainer.innerHTML = '<p>Nenhum plano encontrado.</p>';
+                return;
+            }
+
+            planos.forEach(plano => {
+                const planoElement = document.createElement('div');
+                planoElement.classList.add('mb-2', 'p-3', 'border', 'rounded', 'bg-gray-100');
+                planoElement.innerHTML = `
+                    <p><strong>Plano:</strong> ${plano.nome}</p>
+                    <p><strong>Preço:</strong> R$${(plano.preco / 100).toFixed(2)}</p>
+                    <hr class="my-2">
+                `;
+                planosContainer.appendChild(planoElement);
+            });
+
+        } catch (error) {
+            console.error('Erro ao carregar planos:', error);
+            const planosContainer = document.getElementById('planosContainer');
+            planosContainer.innerHTML = '<p>Erro ao carregar planos.</p>';
+        }
+    }
+
+    // Carrega os leads ao carregar a página
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarLeads();
+        carregarPlanos();
+    });
+    </script>
+</body>
+</html>
